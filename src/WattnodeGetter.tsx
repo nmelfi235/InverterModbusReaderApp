@@ -34,6 +34,12 @@ export default function WattnodeGetter() {
     setRegister(Number(event.target.value));
   };
 
+  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      fetchWattnodeData();
+    }
+  };
+
   return (
     <div className="container my-5">
       <h1 className="mb-3">Wattnode Getter</h1>
@@ -59,6 +65,7 @@ export default function WattnodeGetter() {
           className="form-control"
           value={register}
           onChange={handleRegisterChange}
+          onKeyDown={handleSubmit}
         />
       </div>
       <button className="btn btn-primary" onClick={fetchWattnodeData}>

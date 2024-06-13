@@ -34,6 +34,12 @@ export default function InverterGetter() {
     setRegister(Number(event.target.value));
   };
 
+  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      fetchInverterData();
+    }
+  };
+
   return (
     <div className="container my-5">
       <h1 className="mb-3">Inverter Getter</h1>
@@ -59,6 +65,7 @@ export default function InverterGetter() {
           className="form-control"
           value={register}
           onChange={handleRegisterChange}
+          onKeyDown={handleSubmit}
         />
       </div>
       <button className="btn btn-primary" onClick={fetchInverterData}>
