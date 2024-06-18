@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const url = "10.11.0.2";
 
 export default function BMSGetter() {
   const [register, setRegister] = useState(0);
@@ -8,7 +9,7 @@ export default function BMSGetter() {
 
   const fetchBmsData = async () => {
     const response = await fetch(
-      `http://192.168.0.2:1880/bmsModbus?address=${register}&device=${selectedDevice}`
+      `http://${url}/bmsModbus?address=${register}&device=${selectedDevice}`
     ).then((res) => res.json());
     setOutput(response.result);
   };
@@ -97,8 +98,8 @@ function BmsList() {
 
   useEffect(() => {
     const fetchBmsList = async () => {
-      const response = await fetch("http://192.168.0.2:1880/bmsSlaves").then(
-        (res) => res.json()
+      const response = await fetch(`http://${url}:1880/bmsSlaves`).then((res) =>
+        res.json()
       );
       setBmsList(response);
     };

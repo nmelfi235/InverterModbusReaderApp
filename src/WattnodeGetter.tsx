@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const url = "10.11.0.2";
 
 export default function WattnodeGetter() {
   const [selectedDevice, setSelectedDevice] = useState("wattnode");
@@ -10,9 +11,9 @@ export default function WattnodeGetter() {
 
   useEffect(() => {
     const fetchWattnodeList = async () => {
-      const response = await fetch(
-        "http://192.168.0.2:1880/wattnodeSlaves"
-      ).then((res) => res.json());
+      const response = await fetch(`http://${url}:1880/wattnodeSlaves`).then(
+        (res) => res.json()
+      );
       setWattnodeList(response);
     };
     fetchWattnodeList();
@@ -20,7 +21,7 @@ export default function WattnodeGetter() {
 
   const fetchWattnodeData = async () => {
     const response = await fetch(
-      `http://192.168.0.2:1880/WattnodeModbus?address=${register}&device=${selectedDevice}`
+      `http://${url}:1880/WattnodeModbus?address=${register}&device=${selectedDevice}`
     ).then((res) => res.json());
     setOutput(response.result);
   };

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const url = "10.11.0.2";
 
 export default function InverterGetter() {
   const [selectedDevice, setSelectedDevice] = useState("inverter");
@@ -10,9 +11,9 @@ export default function InverterGetter() {
 
   useEffect(() => {
     const fetchInverterList = async () => {
-      const response = await fetch(
-        "http://192.168.0.2:1880/inverterSlaves"
-      ).then((res) => res.json());
+      const response = await fetch(`http://${url}:1880/inverterSlaves`).then(
+        (res) => res.json()
+      );
       setInverterList(response);
     };
     fetchInverterList();
@@ -20,7 +21,7 @@ export default function InverterGetter() {
 
   const fetchInverterData = async () => {
     const response = await fetch(
-      `http://192.168.0.2:1880/inverterModbus?address=${register}&device=${selectedDevice}`
+      `http://${url}:1880/inverterModbus?address=${register}&device=${selectedDevice}`
     ).then((res) => res.json());
     setOutput(response.result);
   };
