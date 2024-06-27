@@ -3,14 +3,15 @@ export default function Instructions() {
     <div className="container my-5 p-4 border rounded shadow-sm">
       <h1 className="mb-3">Instructions</h1>
       <p className="lead">
-        This app contains two tools for reading Modbus registers of a Cadenza
-        BESS. The <b>Inverter Getter</b> and <b>Wattnode Getter</b> are two
-        tools that can be used to get data from a Conext XW Inverter and a
-        Wattnode device. The instructions are as follows:
+        This app contains three tools for reading the Modbus registers of a
+        Cadenza BESS. The <b>Inverter Getter</b>, <b>BMS Getter</b>, and{" "}
+        <b>Wattnode Getter</b> are tools that can be used to get data from
+        Conext XW Inverters, Cadenza BMSs, and Wattnode devices. The
+        instructions are as follows:
       </p>
       <ol className="list-unstyled">
         <li className="mb-2">
-          Wait about one minute for the list of devices to load.
+          Wait about ten seconds for the list of devices to load.
         </li>
         <li className="mb-2">
           Use the dropdown menu to select the Serial Number of the device you

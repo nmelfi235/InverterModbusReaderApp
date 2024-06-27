@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const url = "10.11.0.2";
+const url = "100.118.246.100";
 
 export default function BMSGetter() {
   const [register, setRegister] = useState(0);
@@ -9,7 +9,7 @@ export default function BMSGetter() {
 
   const fetchBmsData = async () => {
     const response = await fetch(
-      `http://${url}/bmsModbus?address=${register}&device=${selectedDevice}`
+      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
     ).then((res) => res.json());
     setOutput(response.result);
   };
@@ -66,6 +66,20 @@ export default function BMSGetter() {
               onChange={handleDeviceChange}
               onKeyDown={handleSubmit}
             />
+            <div className="form-group">
+              <label htmlFor="register">Register: </label>
+              <input
+                type="number"
+                className="form-control"
+                value={register}
+                onChange={handleRegisterChange}
+                onKeyDown={handleSubmit}
+              />
+            </div>
+            <button className="btn btn-primary" onClick={fetchBmsData}>
+              Submit
+            </button>
+            <p className="mt-3">{output}</p>
           </>
         ) : (
           <>
@@ -74,6 +88,62 @@ export default function BMSGetter() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function BmsList() {
+  const [register, setRegister] = useState(0);
+  const [selectedDevice, setSelectedDevice] = useState("bms");
+  const [output, setOutput] = useState("");
+  const [bmsList, setBmsList] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const fetchBmsList = async () => {
+      const response = await fetch(`http://${url}:1880/bmsSlaves`).then((res) =>
+        res.json()
+      );
+      setBmsList(response);
+    };
+    fetchBmsList();
+  }, []);
+
+  const fetchBmsData = async () => {
+    const response = await fetch(
+      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
+    ).then((res) => res.json());
+    setOutput(response.result);
+  };
+
+  const handleRegisterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRegister(Number(event.target.value));
+  };
+
+  const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDevice(event.target.value);
+    console.log(event.target.value);
+  };
+
+  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      fetchBmsData();
+    }
+  };
+
+  return (
+    <>
+      <select
+        className="form-select"
+        value={selectedDevice}
+        onChange={handleDeviceChange}
+      >
+        <option value=""></option>
+        {Object.entries(bmsList).map(([key, value]) => (
+          <option key={key} value={value}>
+            {key}
+          </option>
+        ))}
+      </select>
       <div className="form-group">
         <label htmlFor="register">Register: </label>
         <input
@@ -88,41 +158,6 @@ export default function BMSGetter() {
         Submit
       </button>
       <p className="mt-3">{output}</p>
-    </div>
-  );
-}
-
-function BmsList() {
-  const [selectedDevice, setSelectedDevice] = useState("bms");
-  const [bmsList, setBmsList] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    const fetchBmsList = async () => {
-      const response = await fetch(`http://${url}:1880/bmsSlaves`).then((res) =>
-        res.json()
-      );
-      setBmsList(response);
-    };
-    fetchBmsList();
-  }, []);
-
-  const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDevice(event.target.value);
-    console.log(event.target.value);
-  };
-
-  return (
-    <select
-      className="form-select"
-      value={selectedDevice}
-      onChange={handleDeviceChange}
-    >
-      <option value=""></option>
-      {Object.entries(bmsList).map(([key, value]) => (
-        <option key={key} value={value}>
-          {key}
-        </option>
-      ))}
-    </select>
+    </>
   );
 }

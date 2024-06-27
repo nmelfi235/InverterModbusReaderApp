@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const url = "10.11.0.2";
+const url = "100.118.246.100";
 
 export default function InverterGetter() {
   const [selectedDevice, setSelectedDevice] = useState("inverter");
