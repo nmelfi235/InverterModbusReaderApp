@@ -1,28 +1,26 @@
 import { useEffect, useState } from "react";
 const url = "100.118.246.100";
 
-export default function InverterGetter() {
+export default function GatewayGetter() {
   const [selectedPort, setSelectedPort] = useState("503");
-  const [selectedDevice, setSelectedDevice] = useState("inverter");
-  const [inverterList, setInverterList] = useState<{ [key: string]: string }>(
-    {}
-  );
+  const [selectedDevice, setSelectedDevice] = useState("gateway");
+  const [gatewayList, setGatewayList] = useState<{ [key: string]: string }>({});
   const [register, setRegister] = useState(0);
   const [output, setOutput] = useState("");
 
   useEffect(() => {
-    const fetchInverterList = async () => {
-      const response = await fetch(`http://${url}:1880/inverterSlaves`).then(
+    const fetchGatewayList = async () => {
+      const response = await fetch(`http://${url}:1880/gatewaySlaves`).then(
         (res) => res.json()
       );
-      setInverterList(response);
+      setGatewayList(response);
     };
-    fetchInverterList();
+    fetchGatewayList();
   }, []);
 
-  const fetchInverterData = async () => {
+  const fetchGatewayData = async () => {
     const response = await fetch(
-      `http://${url}:1880/inverterModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
+      `http://${url}:1880/gatewayModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
     ).then((res) => res.json());
     setOutput(response.result);
   };
@@ -43,13 +41,13 @@ export default function InverterGetter() {
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      fetchInverterData();
+      fetchGatewayData();
     }
   };
 
   return (
     <div className="container my-5">
-      <h1 className="mb-3">Inverter Getter</h1>
+      <h1 className="mb-3">Gateway Getter</h1>
       <div className="form-group">
         <label htmlFor="device">Device Serial #: </label>
         <select
@@ -58,7 +56,7 @@ export default function InverterGetter() {
           onChange={handleDeviceChange}
         >
           <option value=""></option>
-          {Object.entries(inverterList).map(([key, value]) => (
+          {Object.entries(gatewayList).map(([key, value]) => (
             <option key={key} value={value}>
               {key}
             </option>
@@ -89,7 +87,7 @@ export default function InverterGetter() {
           onKeyDown={handleSubmit}
         />
       </div>
-      <button className="btn btn-primary" onClick={fetchInverterData}>
+      <button className="btn btn-primary" onClick={fetchGatewayData}>
         Submit
       </button>
       <p className="mt-3">{output}</p>
