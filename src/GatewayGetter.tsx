@@ -9,13 +9,12 @@ export default function GatewayGetter() {
   const [output, setOutput] = useState("");
 
   useEffect(() => {
-    const fetchGatewayList = async () => {
-      const response = await fetch(`http://${url}:1880/gatewaySlaves`).then(
-        (res) => res.json()
-      );
-      setGatewayList(response);
-    };
-    fetchGatewayList();
+    const fetchGatewayList = setInterval(() => {
+      fetch(`http://${url}:1880/gatewaySlaves`)
+        .then((res) => res.json())
+        .then((data) => setGatewayList(data));
+    }, 1000);
+    return () => clearInterval(fetchGatewayList);
   }, []);
 
   const fetchGatewayData = async () => {
