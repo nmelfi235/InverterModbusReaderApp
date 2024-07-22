@@ -99,12 +99,13 @@ function BmsList() {
   const [bmsList, setBmsList] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    const fetchBmsList = setInterval(() => {
-      fetch(`http://${url}:1880/bmsSlaves`)
-        .then((res) => res.json())
-        .then((data) => setBmsList(data));
-    }, 1000);
-    return () => clearInterval(fetchBmsList);
+    const fetchBmsList = async () => {
+      const response = await fetch(`http://${url}:1880/bmsSlaves`).then((res) =>
+        res.json()
+      );
+      setBmsList(response);
+    };
+    fetchBmsList();
   }, []);
 
   const fetchBmsData = async () => {

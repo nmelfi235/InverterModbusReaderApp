@@ -6,6 +6,10 @@ import InverterGetter from "./InverterGetter";
 import WattnodeGetter from "./WattnodeGetter";
 import OnlineIndicator from "./OnlineIndicator";
 
+/*
+ * App Component:
+ *   This is the structure of the app as a whole.
+ */
 function App() {
   return (
     <>

@@ -10,12 +10,13 @@ export default function WattnodeGetter() {
   const [output, setOutput] = useState("");
 
   useEffect(() => {
-    const fetchWattnodeList = setInterval(() => {
-      fetch(`http://${url}:1880/wattnodeSlaves`)
-        .then((res) => res.json())
-        .then((data) => setWattnodeList(data));
-    }, 1000);
-    return () => clearInterval(fetchWattnodeList);
+    const fetchWattnodeList = async () => {
+      const response = await fetch(`http://${url}:1880/wattnodeSlaves`).then(
+        (res) => res.json()
+      );
+      setWattnodeList(response);
+    };
+    fetchWattnodeList();
   }, []);
 
   const fetchWattnodeData = async () => {

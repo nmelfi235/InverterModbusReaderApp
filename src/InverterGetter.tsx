@@ -11,12 +11,13 @@ export default function InverterGetter() {
   const [output, setOutput] = useState("");
 
   useEffect(() => {
-    const fetchInverterList = setInterval(() => {
-      fetch(`http://${url}:1880/inverterSlaves`)
-        .then((res) => res.json())
-        .then((data) => setInverterList(data));
-    }, 1000);
-    return () => clearInterval(fetchInverterList);
+    const fetchInverterList = async () => {
+      const response = await fetch(`http://${url}:1880/inverterSlaves`).then(
+        (res) => res.json()
+      );
+      setInverterList(response);
+    };
+    fetchInverterList();
   }, []);
 
   const fetchInverterData = async () => {
