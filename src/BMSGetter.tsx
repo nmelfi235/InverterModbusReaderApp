@@ -6,6 +6,7 @@ export default function BMSGetter() {
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState("slave-id");
   const [selectedDevice, setSelectedDevice] = useState("bms");
+
   const [all, setAll] = useState(false);
 
   const fetchBmsData = async () => {
@@ -39,6 +40,10 @@ export default function BMSGetter() {
     console.log(event.target.value);
   };
 
+  const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFprMode(event.target.checked ? 1 : 0);
+  };
+
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       fetchBmsData();
@@ -70,6 +75,15 @@ export default function BMSGetter() {
             value="device-serial"
             name="mode"
             onChange={handleModeChange}
+          />
+          <label htmlFor="fpr-mode">FPR?</label>
+          <input
+            type="checkbox"
+            id="fpr-mode"
+            value={String(fprMode)}
+            checked={fprMode == 1}
+            name="mode"
+            onChange={handleCheckbox}
           />
         </div>
         {mode === "slave-id" ? (
