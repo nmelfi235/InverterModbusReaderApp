@@ -6,12 +6,24 @@ export default function BMSGetter() {
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState("slave-id");
   const [selectedDevice, setSelectedDevice] = useState("bms");
+  const [all, setAll] = useState(false);
 
   const fetchBmsData = async () => {
-    const response = await fetch(
-      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
-    ).then((res) => res.json());
-    setOutput(response.result);
+    if (!all) {
+      const response = await fetch(
+        `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
+      ).then((res) => res.json());
+      setOutput(response.result);
+    } else {
+      let totalOutput = "";
+      for (const [key, value] of Object.entries(bmsList)) {
+        const response = await fetch(
+          `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
+        ).then((res) => res.json());
+        totalOutput += `${key}: ${response.result}\n`;
+      }
+      setOutput(totalOutput);
+    }
   };
 
   const handleRegisterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +43,10 @@ export default function BMSGetter() {
     if (event.key === "Enter") {
       fetchBmsData();
     }
+  };
+
+  const handleAllChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAll(event.target.checked);
   };
 
   return (
@@ -79,6 +95,8 @@ export default function BMSGetter() {
             <button className="btn btn-primary" onClick={fetchBmsData}>
               Submit
             </button>
+            <input type="checkbox" onChange={handleAllChange} />
+            <label htmlFor="all">All Devices</label>
             <p className="mt-3">{output}</p>
           </>
         ) : (

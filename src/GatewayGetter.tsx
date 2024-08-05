@@ -7,6 +7,7 @@ export default function GatewayGetter() {
   const [gatewayList, setGatewayList] = useState<{ [key: string]: string }>({});
   const [register, setRegister] = useState(0);
   const [output, setOutput] = useState("");
+  const [all, setAll] = useState(false);
 
   useEffect(() => {
     const fetchGatewayList = async () => {
@@ -19,10 +20,23 @@ export default function GatewayGetter() {
   }, []);
 
   const fetchGatewayData = async () => {
-    const response = await fetch(
-      `http://${url}:1880/gatewayModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
-    ).then((res) => res.json());
-    setOutput(response.result);
+    if (!all) {
+      const response = await fetch(
+        `http://${url}:1880/gatewayModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
+      ).then((res) => res.json());
+      setOutput(response.result);
+    } else {
+      let totalOutput = "";
+      for (const [key, value] of Object.entries(gatewayList)) {
+        const response = await fetch(
+          `http://${url}:1880/gatewayModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
+        )
+          .then((res) => res.json())
+          .then((res) => res.result);
+        totalOutput += `${key}: ${response}\n`;
+      }
+      setOutput(totalOutput);
+    }
   };
 
   const handlePortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,6 +51,10 @@ export default function GatewayGetter() {
 
   const handleRegisterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRegister(Number(event.target.value));
+  };
+
+  const handleAllChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAll(event.target.checked);
   };
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -90,6 +108,16 @@ export default function GatewayGetter() {
       <button className="btn btn-primary" onClick={fetchGatewayData}>
         Submit
       </button>
+      <input
+        className="form-check-input"
+        type="checkbox"
+        id="all"
+        checked={all}
+        onChange={handleAllChange}
+      />
+      <label className="form-check-label" htmlFor="all">
+        All Devices
+      </label>
       <p className="mt-3">{output}</p>
     </div>
   );
