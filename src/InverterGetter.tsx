@@ -9,6 +9,7 @@ export default function InverterGetter() {
   );
   const [register, setRegister] = useState(0);
   const [output, setOutput] = useState("");
+  const [all, setAll] = useState(false);
 
   useEffect(() => {
     const fetchInverterList = async () => {
@@ -21,10 +22,23 @@ export default function InverterGetter() {
   }, []);
 
   const fetchInverterData = async () => {
-    const response = await fetch(
-      `http://${url}:1880/inverterModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
-    ).then((res) => res.json());
-    setOutput(response.result);
+    if (!all) {
+      const response = await fetch(
+        `http://${url}:1880/inverterModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
+      ).then((res) => res.json());
+      setOutput(response.result);
+    } else {
+      let totalOutput = "";
+      for (const [key, value] of Object.entries(inverterList)) {
+        const response = await fetch(
+          `http://${url}:1880/inverterModbus?address=${register}&device=${selectedDevice}&port=${selectedPort}`
+        )
+          .then((res) => res.json())
+          .then((res) => res.result);
+        totalOutput += `${key}: ${response}\n`;
+      }
+      setOutput(totalOutput);
+    }
   };
 
   const handlePortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -42,9 +56,12 @@ export default function InverterGetter() {
   };
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      fetchInverterData();
-    }
+    if (event.key !== "Enter") return;
+    fetchInverterData();
+  };
+
+  const handleAllChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAll(event.target.checked);
   };
 
   return (
@@ -92,6 +109,13 @@ export default function InverterGetter() {
       <button className="btn btn-primary" onClick={fetchInverterData}>
         Submit
       </button>
+      <input
+        type="checkbox"
+        id="all-devices"
+        checked={all}
+        onChange={handleAllChange}
+      />
+      <label htmlFor="all-devices">All Devices</label>
       <p className="mt-3">{output}</p>
     </div>
   );

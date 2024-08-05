@@ -8,6 +8,7 @@ export default function WattnodeGetter() {
   );
   const [register, setRegister] = useState(0);
   const [output, setOutput] = useState("");
+  const [all, setAll] = useState(false);
 
   useEffect(() => {
     const fetchWattnodeList = async () => {
@@ -20,10 +21,23 @@ export default function WattnodeGetter() {
   }, []);
 
   const fetchWattnodeData = async () => {
-    const response = await fetch(
-      `http://${url}:1880/WattnodeModbus?address=${register}&device=${selectedDevice}`
-    ).then((res) => res.json());
-    setOutput(response.result);
+    if (!all) {
+      const response = await fetch(
+        `http://${url}:1880/WattnodeModbus?address=${register}&device=${selectedDevice}`
+      ).then((res) => res.json());
+      setOutput(response.result);
+    } else {
+      let totalOutput = "";
+      for (const [key, value] of Object.entries(wattnodeList)) {
+        const response = await fetch(
+          `http://${url}:1880/WattnodeModbus?address=${register}&device=${selectedDevice}`
+        )
+          .then((res) => res.json())
+          .then((res) => res.result);
+        totalOutput += `${key}: ${response}\n`;
+      }
+      setOutput(totalOutput);
+    }
   };
 
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,6 +53,10 @@ export default function WattnodeGetter() {
     if (event.key === "Enter") {
       fetchWattnodeData();
     }
+  };
+
+  const handleAllChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAll(event.target.checked);
   };
 
   return (
@@ -72,6 +90,8 @@ export default function WattnodeGetter() {
       <button className="btn btn-primary" onClick={fetchWattnodeData}>
         Submit
       </button>
+      <input type="checkbox" onChange={handleAllChange} />
+      <label htmlFor="all">All Devices</label>
       <p className="mt-3">{output}</p>
     </div>
   );

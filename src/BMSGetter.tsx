@@ -6,11 +6,10 @@ export default function BMSGetter() {
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState("slave-id");
   const [selectedDevice, setSelectedDevice] = useState("bms");
-  const [fprMode, setFprMode] = useState(0);
 
   const fetchBmsData = async () => {
     const response = await fetch(
-      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}&fpr=${fprMode}`
+      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
     ).then((res) => res.json());
     setOutput(response.result);
   };
@@ -26,10 +25,6 @@ export default function BMSGetter() {
   const handleDeviceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDevice(event.target.value);
     console.log(event.target.value);
-  };
-
-  const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFprMode(event.target.checked ? 1 : 0);
   };
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -59,15 +54,6 @@ export default function BMSGetter() {
             value="device-serial"
             name="mode"
             onChange={handleModeChange}
-          />
-          <label htmlFor="fpr-mode">FPR?</label>
-          <input
-            type="checkbox"
-            id="fpr-mode"
-            value={String(fprMode)}
-            checked={fprMode == 1}
-            name="mode"
-            onChange={handleCheckbox}
           />
         </div>
         {mode === "slave-id" ? (
@@ -111,6 +97,7 @@ function BmsList() {
   const [selectedDevice, setSelectedDevice] = useState("bms");
   const [output, setOutput] = useState("");
   const [bmsList, setBmsList] = useState<{ [key: string]: string }>({});
+  const [all, setAll] = useState(false);
 
   useEffect(() => {
     const fetchBmsList = async () => {
@@ -123,10 +110,21 @@ function BmsList() {
   }, []);
 
   const fetchBmsData = async () => {
-    const response = await fetch(
-      `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
-    ).then((res) => res.json());
-    setOutput(response.result);
+    if (!all) {
+      const response = await fetch(
+        `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
+      ).then((res) => res.json());
+      setOutput(response.result);
+    } else {
+      let totalOutput = "";
+      for (const [key, value] of Object.entries(bmsList)) {
+        const response = await fetch(
+          `http://${url}:1880/BMSModbus?address=${register}&device=${selectedDevice}`
+        ).then((res) => res.json());
+        totalOutput += `${key}: ${response.result}\n`;
+      }
+      setOutput(totalOutput);
+    }
   };
 
   const handleRegisterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +140,10 @@ function BmsList() {
     if (event.key === "Enter") {
       fetchBmsData();
     }
+  };
+
+  const handleAllChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAll(event.target.checked);
   };
 
   return (
@@ -171,6 +173,8 @@ function BmsList() {
       <button className="btn btn-primary" onClick={fetchBmsData}>
         Submit
       </button>
+      <input type="checkbox" onChange={handleAllChange} />
+      <label htmlFor="all">All Devices</label>
       <p className="mt-3">{output}</p>
     </>
   );
